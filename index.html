@@ -2,11 +2,12 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Boglehead Calculator</title>
+    <title>Bogle Calculator</title>
   </head>
-  <body>
-    <h1>Boglehead Calculator</h1>
-    <div style="display: flex; flex-direction: column; gap: 10px;">
+  <body style="display: flex; justify-content: center; align-items: center; background-color: #f0f0f0; font-family: Arial, sans-serif;">
+    <div>
+    <h1>Bogle Calculator</h1>
+    <div style="display: flex; flex-direction: column; gap: 10px; max-width: 300px;">
       <div class="button-cap-group" style="display: flex; flex-direction: row; gap: 10px;">
         <input type="checkbox" id="100Checkbox" checked>
         <label for="100Checkbox">100 Cap</label>
@@ -21,10 +22,13 @@
 
       <button id="calculateBtn">Calculate</button>
     </div>
+    </div>
   </body>
 
   <script>
     const capCheckboxes = document.querySelectorAll('.button-cap-group input[type="checkbox"]');
+    const ageInput = document.getElementById('ageInput');
+    const calculateBtn = document.getElementById('calculateBtn');
 
     capCheckboxes.forEach(checkbox => {
       checkbox.addEventListener('change', () => {
@@ -38,16 +42,25 @@
       });
     })
 
-    const selectedCap = capCheckboxes.find(checkbox => checkbox.checked)
-
-    console.log(selectedCap)
-
-    const ageInput = document.getElementById('ageInput');
-    const calculateBtn = document.getElementById('calculateBtn');
 
     calculateBtn.addEventListener('click', () => {
       console.log('Button clicked!');
     })
+
+    function calculate(cap, age, internationalPercentage = 0.25) {
+      const bondAllocation = cap - age;
+      const stockAllocation = 100 - bondAllocation;
+      const americanAllocation = stockAllocation * (1 - internationalPercentage);
+      const internationalAllocation = stockAllocation * internationalPercentage;
+
+      return {
+        bonds: bondAllocation,
+        american: americanAllocation,
+        international: internationalAllocation
+      }
+    }
+
+    console.log(calculate(100, 30))
 
   </script>
 </html>
