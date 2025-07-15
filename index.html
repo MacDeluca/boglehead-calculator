@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Boglehead Calculator</title>
+  </head>
+  <body>
+    <h1>Boglehead Calculator</h1>
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+      <div class="button-cap-group" style="display: flex; flex-direction: row; gap: 10px;">
+        <input type="checkbox" id="100Checkbox" checked>
+        <label for="100Checkbox">100 Cap</label>
+
+        <input type="checkbox" id="120Checkbox">
+        <label for="120Checkbox">120 Cap</label>
+
+        <input type="checkbox" id="130Checkbox">
+        <label for="130Checkbox">130 Cap</label>
+      </div>
+      <input type="number" id="ageInput" placeholder="Age">
+
+      <button id="calculateBtn">Calculate</button>
+    </div>
+  </body>
+
+  <script>
+    const capCheckboxes = document.querySelectorAll('.button-cap-group input[type="checkbox"]');
+
+    capCheckboxes.forEach(checkbox => {
+      checkbox.addEventListener('change', () => {
+        if (checkbox.checked) {
+          capCheckboxes.forEach(otherCheckbox => {
+            if (otherCheckbox !== checkbox) {
+              otherCheckbox.checked = false;
+            }
+          })
+        }
+      });
+    })
+
+    const selectedCap = capCheckboxes.find(checkbox => checkbox.checked)
+
+    console.log(selectedCap)
+
+    const ageInput = document.getElementById('ageInput');
+    const calculateBtn = document.getElementById('calculateBtn');
+
+    calculateBtn.addEventListener('click', () => {
+      console.log('Button clicked!');
+    })
+
+  </script>
+</html>
