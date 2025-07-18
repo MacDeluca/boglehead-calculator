@@ -25,8 +25,9 @@
     }
 
     h1 {
-      font-size: 24px;
+      font-size: 32px;
       margin-bottom: 20px;
+      margin-top: 0;
       text-align: center;
       color: #f8fafc;
     }
@@ -34,7 +35,7 @@
     .form-group {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
     }
 
     .button-cap-group {
@@ -43,24 +44,34 @@
       justify-content: space-between;
     }
 
-    .button-cap-group label {
+    button {
       background-color: #334155;
-      padding: 8px 12px;
+      padding: 10px 12px;
       border-radius: 6px;
+      border: none;
       cursor: pointer;
-      transition: background-color 0.2s;
       flex: 1;
       text-align: center;
       color: #e2e8f0;
+      font-size: 14px;
+      transition: background-color 0.2s;
     }
 
-    .button-cap-group input[type="checkbox"] {
-      display: none;
+    button:hover {
+      background-color: #475569;
     }
 
-    .button-cap-group input[type="checkbox"]:checked + label {
+    button.selected {
       background-color: #3b82f6;
       color: white;
+    }
+
+    #calculateBtn {
+      margin-top: 10px;
+    }
+
+    #calculateBtn:hover {
+      background-color: #2563eb;
     }
 
     input[type="number"] {
@@ -72,23 +83,8 @@
       font-size: 14px;
     }
 
-    button {
-      padding: 10px;
-      background-color: #3b82f6;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-size: 16px;
-      cursor: pointer;
-      margin-top: 10px;
-      transition: background-color 0.2s;
-    }
-
-    button:hover {
-      background-color: #2563eb;
-    }
-
     #result {
+      display: none;
       margin-top: 25px;
       background-color: #334155;
       padding: 15px;
@@ -98,6 +94,7 @@
     #result h2 {
       font-size: 18px;
       margin-bottom: 10px;
+      margin-top: 0;
       color: #f1f5f9;
     }
 
@@ -111,48 +108,43 @@
     <h1>Boglehead Calculator</h1>
     <div class="form-group">
       <div class="button-cap-group">
-        <input type="checkbox" id="cap100" value="100" checked>
-        <label for="cap100">100 Cap</label>
-
-        <input type="checkbox" id="cap120" value="120">
-        <label for="cap120">120 Cap</label>
-
-        <input type="checkbox" id="cap130" value="130">
-        <label for="cap130">130 Cap</label>
+        <button class="selected" data-cap="100">100 Rule</button>
+        <button data-cap="120">120 Rule</button>
+        <button data-cap="130">130 Rule</button>
       </div>
 
       <label for="ageInput">Age</label>
       <input type="number" id="ageInput" placeholder="Enter your age">
 
-      <label for="internationalInput">International stock allocation %</label>
-      <input type="number" id="internationalInput" placeholder="Enter international stock allocation % ie: 25" value="25">
+      <label for="internationalInput">International allocation %</label>
+      <input type="number" id="internationalInput" placeholder="Enter international allocation %" value="25">
 
-      <button id="calculateBtn">Calculate</button>
+      <button id="calculateBtn" class="selected">Calculate</button>
 
       <div id="result">
         <h2>Result</h2>
-        <p id="bonds">Bonds: </p>
-        <p id="american">American Stocks: </p>
-        <p id="international">International Stocks: </p>
+        <p id="bonds"></p>
+        <p id="american"></p>
+        <p id="international"></p>
       </div>
     </div>
   </div>
 
   <script>
-    const checkboxes = document.querySelectorAll('.button-cap-group input[type="checkbox"]');
+    let selectedCap = 100;
 
-    checkboxes.forEach(checkbox => {
-      checkbox.addEventListener('change', () => {
-        if (checkbox.checked) {
-          checkboxes.forEach(cb => {
-            if (cb !== checkbox) cb.checked = false;
-          });
-        }
+    // Set the initial selected cap button
+    const capButtons = document.querySelectorAll('.button-cap-group button');
+    capButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        capButtons.forEach(btn => btn.classList.remove('selected'));
+        button.classList.add('selected');
+        selectedCap = parseInt(button.getAttribute('data-cap'), 10);
       });
     });
 
+    // Calculate the portfolio allocation
     const calculateBtn = document.getElementById('calculateBtn');
-
     calculateBtn.addEventListener('click', () => {
       const age = parseInt(document.getElementById('ageInput').value, 10);
       const internationalPercentage = parseFloat(document.getElementById('internationalInput').value);
@@ -174,15 +166,22 @@
         return;
       }
 
-      const cap = Array.from(checkboxes).find(cb => cb.checked).value;
-      const stocks = Math.max(0, cap - age);
+      // Calculate the portfolio allocations
+      const stocks = Math.max(0, selectedCap - age);
       const bonds = 100 - stocks;
       const international = (stocks * internationalPercentage) / 100;
       const american = stocks - international;
 
-      document.getElementById('bonds').textContent = `Bonds: ${bonds}%`;
-      document.getElementById('american').textContent = `American Stocks: ${american.toFixed(2)}%`;
-      document.getElementById('international').textContent = `International Stocks: ${international.toFixed(2)}%`;
+      if (american + international + bonds !== 100) {
+        alert("Calculated percentages do not sum to 100%. Please check your inputs.");
+        return;
+      }
+
+      // Update the result display
+      document.getElementById('result').style.display = 'block';
+      document.getElementById('bonds').textContent = `Bonds (BND): ${bonds}%`;
+      document.getElementById('american').textContent = `US Stock Market (VTI): ${american.toFixed(2)}%`;
+      document.getElementById('international').textContent = `International Stock Market (VXUS): ${international.toFixed(2)}%`;
     });
   </script>
 </body>
